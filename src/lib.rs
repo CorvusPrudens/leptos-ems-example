@@ -1,36 +1,31 @@
 use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
+use leptos_use::use_event_listener;
 
-// Modules
-mod components;
-mod pages;
-
-// Top-Level pages
-use crate::pages::home::Home;
-use crate::pages::not_found::NotFound;
-
-/// An app router which renders the homepage and handles 404's
 #[component]
 pub fn App() -> impl IntoView {
-    // Provides context that manages stylesheets, titles, meta tags, etc.
-    provide_meta_context();
+    let (counter, set_counter) = create_signal(0);
+
+    let node_ref = create_node_ref::<html::Button>();
+    let _ = use_event_listener(node_ref, ev::click, move |_| {
+        set_counter.update(|c| *c += 1);
+    });
+
+    let direct_counter = html::button().child("Direct counter");
+    let _ = use_event_listener(direct_counter.clone(), ev::click, move |_| {
+        set_counter.update(|c| *c += 2);
+    });
 
     view! {
-        <Html lang="en" dir="ltr" attr:data-theme="light"/>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <button node_ref=node_ref>
+                "NodeRef counter"
+            </button>
 
-        // sets the document title
-        <Title text="Welcome to Leptos CSR"/>
+            {direct_counter}
 
-        // injects metadata in the <head> of the page
-        <Meta charset="UTF-8"/>
-        <Meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-        <Router>
-            <Routes>
-                <Route path="/" view=Home/>
-                <Route path="/*" view=NotFound/>
-            </Routes>
-        </Router>
+            <div>
+                {counter}
+            </div>
+        </div>
     }
 }

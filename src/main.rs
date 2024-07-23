@@ -1,5 +1,5 @@
 use leptos::*;
-use {{crate_name}}::App;
+use leptos_ems_example::App;
 
 fn main() {
     // set up logging
